@@ -5,44 +5,61 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance; // Singleton
+
     public Slider gridSizeSlider;
-    public Slider snakeSpeedSlider;
+    public Slider speedSlider;
+    public GameObject gameOverPanel;
+
     public Button startButton;
+    public Button restartButton;
+    public Button backButton;
 
-    public static UIManager Instance;
-
-    public int gridSize { get; private set; }
-    public float snakeSpeed { get; private set; }
-
-    #region Singleton
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); 
         }
         else
         {
             Destroy(gameObject);
         }
     }
-    #endregion
+
     void Start()
     {
-        // Configurações iniciais
-        gridSize = (int)gridSizeSlider.value;
-        snakeSpeed = snakeSpeedSlider.value;
-
-        // Vincula o botão Start ao método que iniciará o jogo
-        startButton.onClick.AddListener(StartGame);
+        // Configurar listeners dos botões
+        startButton.onClick.AddListener(OnStartGame);
+        restartButton.onClick.AddListener(OnRestartGame);
+        backButton.onClick.AddListener(OnBackToSettings);
+        gameOverPanel.SetActive(false);
     }
 
-    public void StartGame()
+    public void OnStartGame()
     {
-        // Atualiza as configurações e carrega a cena do jogo
-        gridSize = (int)gridSizeSlider.value;
-        snakeSpeed = snakeSpeedSlider.value;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+        int gridSize = (int)gridSizeSlider.value;
+        float speed = speedSlider.value;
+        GameManager.Instance.StartGame(gridSize, speed);
+    }
+
+    public void ShowGameOverPanel()
+    {
+        gameOverPanel.SetActive(true);
+    }
+
+    public void HideGameOverPanel()
+    {
+        gameOverPanel.SetActive(false);
+    }
+
+    public void OnRestartGame()
+    {
+        GameManager.Instance.RestartGame();
+    }
+
+    public void OnBackToSettings()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 }
