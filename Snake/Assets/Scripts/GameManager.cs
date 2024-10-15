@@ -1,16 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance; // Singleton
+
     public int gridSizeX;
     public int gridSizeY;
-    public GameObject gridCellPrefab;
-
-    public static GameManager Instance;
-
-    private void Awake()
+    public float snakeSpeed;
+    #region Singleton
+    void Awake()
     {
+        // Singleton para garantir uma única instância
         if (Instance == null)
         {
             Instance = this;
@@ -20,25 +22,29 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    #endregion
 
-    void Start()
+    public void StartGame(int gridSize, float speed)
     {
-        // Define o tamanho do grid baseado nas configurações do jogador
-        gridSizeX = GameSettings.Instance.gridSize;
-        gridSizeY = GameSettings.Instance.gridSize;
-
-        GenerateGrid();
+        // Inicia o jogo com os parâmetros da UI
+        gridSizeX = gridSize;
+        gridSizeY = gridSize;
+        snakeSpeed = speed;
+        // Configura o ambiente inicial do jogo
+        Player.Instance.InitializeSnake(); // Inicializa a cobra
+        CameraManager.Instance.AdjustCamera(gridSize); // Ajusta a câmera
     }
 
-    void GenerateGrid()
+    public void GameOver()
     {
-        // Gera o grid visual
-        for (int x = 0; x < gridSizeX; x++)
-        {
-            for (int y = 0; y < gridSizeY; y++)
-            {
-                Instantiate(gridCellPrefab, new Vector2(x, y), Quaternion.identity);
-            }
-        }
+        // Lógica de Game Over
+        UIManager.Instance.ShowGameOverPanel();
+    }
+
+    public void RestartGame()
+    {
+        // Reiniciar o jogo com as mesmas configurações
+        Player.Instance.ResetSnake();
+        UIManager.Instance.HideGameOverPanel();
     }
 }
