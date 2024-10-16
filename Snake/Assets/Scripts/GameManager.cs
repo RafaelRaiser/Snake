@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance; // Singleton para acesso global
+    public static GameManager Instance; 
 
     public int gridSizeX;
     public int gridSizeY;
     public float snakeSpeed;
-    public GameObject foodPrefab; // Prefab da comida
-    public Vector2 currentFoodPosition; // Posição atual da comida
-    private GameObject currentFoodInstance; // Instância atual da comida
+    public GameObject foodPrefab; 
+    public Vector2 currentFoodPosition;
+    private GameObject currentFoodInstance; 
 
+    #region Singleton
     void Awake()
     {
         if (Instance == null)
@@ -24,7 +25,7 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    #endregion
     // Inicia o jogo
     public void StartGame(int gridSize, float speed)
     {
