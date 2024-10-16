@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance; // Singleton
+    public static GameManager Instance; // Singleton para acesso global
 
     public int gridSizeX;
     public int gridSizeY;
     public float snakeSpeed;
-    #region Singleton
+    public GameObject foodPrefab; // Prefab da comida
+    public Vector2 currentFoodPosition; // Posição atual da comida
+    private GameObject currentFoodInstance; // Instância atual da comida
+
     void Awake()
     {
-        // Singleton para garantir uma única instância
         if (Instance == null)
         {
             Instance = this;
@@ -22,29 +24,54 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    #endregion
 
+    // Inicia o jogo
     public void StartGame(int gridSize, float speed)
     {
-        // Inicia o jogo com os parâmetros da UI
         gridSizeX = gridSize;
         gridSizeY = gridSize;
+
         snakeSpeed = speed;
-        // Configura o ambiente inicial do jogo
-        Player.Instance.InitializeSnake(); // Inicializa a cobra
-        CameraManager.Instance.AdjustCamera(gridSize); // Ajusta a câmera
+
+        // Inicializa a cobra
+        Player.Instance.InitializeSnake();
+
+        // Ajusta a câmera para que o grid fique centralizado e visível
+        CameraManager.Instance.AdjustCamera(gridSize);
+
+        // Instancia a comida no início do jogo
+        SpawnFood();
     }
 
+    // Método para instanciar comida aleatoriamente
+    public void SpawnFood()
+    {
+        // Se já existir uma comida na cena, destrói a comida anterior
+        if (currentFoodInstance != null)
+        {
+            Destroy(currentFoodInstance);
+        }
+
+        // Gera uma posição aleatória dentro dos limites do grid
+        int xPos = Random.Range(0, gridSizeX);
+        int yPos = Random.Range(0, gridSizeY);
+        currentFoodPosition = new Vector2(xPos, yPos);
+
+        // Instancia a nova comida na posição aleatória
+        currentFoodInstance = Instantiate(foodPrefab, currentFoodPosition, Quaternion.identity);
+    }
+
+    // Método para exibir o Game Over
     public void GameOver()
     {
-        // Lógica de Game Over
-        UIManager.Instance.ShowGameOverPanel();
+        UIManager.Instance.ShowGameOverPanel(); // Mostra a tela de Game Over
     }
 
+    // Reinicia o jogo
     public void RestartGame()
     {
-        // Reiniciar o jogo com as mesmas configurações
-        Player.Instance.ResetSnake();
-        UIManager.Instance.HideGameOverPanel();
+        Player.Instance.ResetSnake(); // Reseta a cobra
+        SpawnFood(); // Instancia nova comida
+        UIManager.Instance.HideGameOverPanel(); // Esconde o painel de Game Over
     }
 }

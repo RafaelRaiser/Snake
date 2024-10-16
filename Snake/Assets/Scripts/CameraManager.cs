@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    public static CameraManager Instance; // Singleton
+    public static CameraManager Instance; 
 
     private Camera mainCamera;
-
+    #region Singleton
     void Awake()
     {
         if (Instance == null)
@@ -18,15 +18,19 @@ public class CameraManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        mainCamera = Camera.main;
+        mainCamera = Camera.main; // Pega a referência da câmera principal
     }
+    #endregion
 
+    // Ajusta a câmera com base no tamanho do grid
     public void AdjustCamera(int gridSize)
     {
-        // Ajusta o zoom e a posição da câmera com base no grid
-        float cameraDistance = gridSize / 2f + 2;
-        mainCamera.orthographicSize = cameraDistance;
-        mainCamera.transform.position = new Vector3(gridSize / 2f, gridSize / 2f, -10f);
+        float gridHalfSize = gridSize / 2f; // Calcula metade do grid
+
+        // Ajuste o tamanho ortográfico da câmera para que todo o grid fique visível
+        mainCamera.orthographicSize = gridHalfSize + 2; // Ajusta o zoom da câmera
+
+        // Centraliza a câmera no meio do grid
+        mainCamera.transform.position = new Vector3(gridHalfSize, gridHalfSize, -10f);
     }
 }
